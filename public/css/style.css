@@ -1,0 +1,32 @@
+/* public/css/style.css */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+
+:root {
+    --primary-lumina: #2D3E8B;
+    --bg-gray: #F9FAFB;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: var(--bg-gray);
+}
+
+/* Custom shadow untuk card Lumina */
+.lumina-card {
+    border: 1px solid #F3F4F6;
+    transition: all 0.3s ease;
+}
+
+.lumina-card:hover {
+    box-shadow: 0 10px 25px -5px rgba(45, 62, 139, 0.1);
+    transform: translateY(-2px);
+}
+
+/* Styling scrollbar agar tipis seperti di desain */
+::-webkit-scrollbar {
+    width: 6px;
+}
+::-webkit-scrollbar-thumb {
+    background: #E5E7EB;
+    border-radius: 10px;
+}
