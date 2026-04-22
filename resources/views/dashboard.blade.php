@@ -70,6 +70,9 @@
                         <p class="text-gray-400 font-medium text-lg">You have completed all your tasks!</p>
                     </div>
                 @endif
+            <div class="flex flex-col items-center justify-center py-10">
+                <img src="{{ asset('images/done-task.png') }}" class="w-72 mb-8 drop-shadow-2xl" alt="All Done">
+                <p class="text-gray-400 font-medium text-lg">You have completed all your tasks!</p>
             </div>
         </div>
     </main>
