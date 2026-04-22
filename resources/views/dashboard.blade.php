@@ -12,14 +12,12 @@
         <div class="grid grid-cols-4 gap-6 mb-12">
             <div class="bg-[#F0F2FF] p-8 rounded-[40px] border border-blue-100 relative overflow-hidden group hover:shadow-lg transition-all">
                 <p class="text-indigo-900 font-bold mb-2 uppercase text-xs tracking-widest italic">Total Task</p>
-                <h3 class="text-6xl font-bold text-indigo-950">0</h3>
-                <img src="{{ asset('images/decor-paper.png') }}" class="absolute -right-2 -bottom-2 w-20 opacity-10">
+                <h3 class="text-6xl font-bold text-indigo-950">{{ $totalTask ?? 0 }}</h3>
             </div>
 
             <div class="bg-[#EFFFF6] p-8 rounded-[40px] border border-green-100 relative overflow-hidden group hover:shadow-lg transition-all">
                 <p class="text-emerald-900 font-bold mb-2 uppercase text-xs tracking-widest italic">Completed</p>
                 <h3 class="text-6xl font-bold text-emerald-900">0</h3>
-                <img src="{{ asset('images/decor-check.png') }}" class="absolute -right-2 -bottom-2 w-20 opacity-10">
             </div>
 
             <div class="bg-[#FFF9F0] p-8 rounded-[40px] border border-orange-100 group hover:shadow-lg transition-all">
@@ -50,9 +48,28 @@
                 <input type="text" placeholder="Search tasks" class="w-full pl-8 pb-3 border-b border-gray-100 outline-none text-sm text-gray-500 bg-transparent">
             </div>
 
-            <div class="flex flex-col items-center justify-center py-10">
-                <img src="{{ asset('images/done-task.png') }}" class="w-72 mb-8 drop-shadow-2xl" alt="All Done">
-                <p class="text-gray-400 font-medium italic text-lg">You have completed all your tasks!</p>
+            @if(isset($tasks) && count($tasks) > 0)
+                    <div class="bg-white rounded-xl overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <tbody class="divide-y divide-gray-50">
+                                @foreach($tasks as $task)
+                                    <x-task.table-row 
+                                        :name="$task['name']" 
+                                        :course="$task['course']" 
+                                        :due="$task['due']" 
+                                        :time="$task['time'] ?? '23.59'" 
+                                        :status="$task['status']" 
+                                    />
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @else
+                    <div class="flex flex-col items-center justify-center py-10">
+                        <img src="{{ asset('images/done-task.png') }}" class="w-72 mb-8" alt="All Done">
+                        <p class="text-gray-400 font-medium text-lg">You have completed all your tasks!</p>
+                    </div>
+                @endif
             </div>
         </div>
     </main>

@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TaskController;
+use Illuminate\Support\Facades\Storage;
 
 
 Route::get('/', function () {
@@ -14,7 +16,20 @@ Route::get('/register', function () {
 
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    $user = session('user');
+    $userName = $user['name'] ?? 'Guest';
+
+    $path = 'tasks.json';
+    $tasks = Storage::exists($path) ? json_decode(Storage::get($path), true) : [];
+    
+    if (!is_array($tasks)) { 
+        $tasks = []; 
+    }
+
+    $totalTask = count($tasks);
+    $completedCount = count(array_filter($tasks, fn($t) => ($t['status'] ?? '') === 'Done'));
+
+    return view('dashboard', compact('userName', 'tasks', 'totalTask', 'completedCount'));
 })->name('dashboard');
 
 Route::get('/all-task', function () {
@@ -40,3 +55,6 @@ Route::get('/tasks/detail', function () {
 Route::get('/settings', function () {
     return view('settings');
 })->name('settings');
+
+Route::get('/all-task', [TaskController::class, 'index'])->name('all-task');
+Route::post('/all-task', [TaskController::class, 'store'])->name('tasks.store');
