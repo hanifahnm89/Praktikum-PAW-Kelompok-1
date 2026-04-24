@@ -2,13 +2,14 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\LandingController;
 use Illuminate\Support\Facades\Storage;
 
+Route::get('/', [LandingController::class, 'index'])->name('landing');
 
-Route::get('/', function () {
+Route::get('/login', function () {
     return view('auth.login');
 })->name('login');
-
 
 Route::get('/register', function () {
     return view('auth.register');
