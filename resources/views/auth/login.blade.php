@@ -1,6 +1,6 @@
 @extends('layouts.auth')
 @section('title', 'Login')
-@section('side_image', asset('images/login-gambar.png')) 
+@section('side_image', asset('images/note.png')) 
 
 @section('form_content')
     <h1 class="text-3xl font-bold text-gray-800 mb-1">Login</h1>

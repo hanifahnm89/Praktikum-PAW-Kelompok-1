@@ -20,7 +20,7 @@
     </label>
 
     <button type="button" 
-        onclick="window.location.href='{{ route('login') }}'" 
+        onclick="window.location.href='{{ route('dashboard') }}'" 
         class="w-full bg-[#2D3E8B] text-white py-4 rounded-xl font-bold">
     Create account
 </button>

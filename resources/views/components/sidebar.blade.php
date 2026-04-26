@@ -17,7 +17,7 @@
         <span class="text-sm">Dashboard</span>
     </a>
 
-    <a href="{{ route('calender') }}" class="flex items-center gap-4 p-3 rounded-xl {{ request()->is('calender') ? 'bg-indigo-50 text-primary font-bold' : 'text-gray-400' }}">
+    <a href="{{ route('calendar') }}" class="flex items-center gap-4 p-3 rounded-xl {{ request()->is('calendar') ? 'bg-indigo-50 text-primary font-bold' : 'text-gray-400' }}">
         <i class="ph ph-calendar text-xl"></i> 
         <span class="text-sm">Calendar</span>
     </a>
