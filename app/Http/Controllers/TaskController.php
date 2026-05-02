@@ -19,6 +19,7 @@ class TaskController extends Controller
         $tasks = Storage::exists($path) ? json_decode(Storage::get($path), true) : [];
 
         $newTask = [
+            'id' => uniqid(),
             'name' => $request->task_name,
             'course' => $request->course,
             'due' => $request->deadline,
@@ -49,5 +50,25 @@ class TaskController extends Controller
             'totalTask' => $totalTask,
             'completedCount' => $completedCount
         ]);
+    }
+
+    public function updateStatus($id) {
+        $path = 'tasks.json';
+        $tasks = Storage::exists($path) ? json_decode(Storage::get($path), true) : [];
+
+        // Pastikan $tasks itu array
+        if (!is_array($tasks)) $tasks = [];
+
+        foreach ($tasks as &$task) {
+            // Tambahin isset() biar kalau 'id' gak ada, dia gak error tapi di-skip aja
+            if (isset($task['id']) && $task['id'] == $id) {
+                $task['status'] = 'Done';
+                break;
+            }
+        }
+
+        Storage::put($path, json_encode($tasks, JSON_PRETTY_PRINT));
+
+        return back()->with('success', 'Hore! Task berhasil diselesaikan.');
     }
 }

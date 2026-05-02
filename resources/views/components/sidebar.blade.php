@@ -37,4 +37,16 @@
         <span class="text-sm">Settings</span>
     </a>
 </nav>
+<nav class="space-y-2 flex-1">
+        </nav>
+
+    <div class="mt-auto pt-6 border-t border-gray-100">
+        <a href="{{ route('logout') }}" 
+           onclick="return confirm('Yakin mau keluar dari Lumina?')"
+           class="flex items-center gap-4 p-3 rounded-xl text-red-500 hover:bg-red-50 transition">
+            <i class="ph ph-sign-out text-xl"></i>
+            <span class="text-sm font-bold">Log out</span>
+        </a>
+    </div>
+</aside>
 </aside>

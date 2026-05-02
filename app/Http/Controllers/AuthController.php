@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -15,18 +16,30 @@ class AuthController extends Controller
     }
 
     public function register(Request $request) {
+        $request->validate([
+            'first_name' => 'required|string|max:100',
+            'last_name'  => 'required|string|max:100',
+            'email'      => 'required|email',
+            'password'   => 'required|min:8|confirmed',
+        ]);
+
         $users = $this->getUsers();
 
         foreach ($users as $user) {
             if ($user['email'] === $request->email) {
-                return back()->with('error', 'Email sudah terdaftar!');
+                return back()->withErrors(['email' => 'Email sudah terdaftar!'])->withInput();
             }
         }
 
+        $fullName = $request->first_name . ' ' . $request->last_name;
+
         $newUser = [
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password), 
+            'id'         => uniqid(),
+            'name'       => $fullName,
+            'first_name' => $request->first_name,
+            'last_name'  => $request->last_name,
+            'email'      => $request->email,
+            'password'   => Hash::make($request->password),
         ];
 
         $users[] = $newUser;
@@ -36,21 +49,33 @@ class AuthController extends Controller
     }
 
     public function login(Request $request) {
+        $credentials = $request->validate([
+            'email'    => 'required|email',
+            'password' => 'required',
+        ]);
+
         $users = $this->getUsers();
 
         foreach ($users as $user) {
-            if ($user['email'] === $request->email && Hash::check($request->password, $user['password'])) {
-
+            if ($user['email'] === $credentials['email'] && Hash::check($credentials['password'], $user['password'])) {
+                
                 session(['user' => $user]);
-                return redirect()->route('dashboard');
+
+                $request->session()->regenerate();
+
+                return redirect()->route('dashboard')->with('success', 'Selamat datang, ' . $user['name']);
             }
         }
 
-        return back()->with('error', 'Email atau password salah!');
+        return back()->withErrors(['email' => 'Email atau password salah!'])->withInput();
     }
 
-    public function logout() {
+    public function logout(Request $request) {
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        
         session()->forget('user');
-        return redirect()->route('login');
+
+        return redirect()->route('login')->with('success', 'Anda telah berhasil logout.');
     }
 }

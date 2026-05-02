@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Calendar - Lumina</title>
-    @vite('resources/css/app.css')
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
 

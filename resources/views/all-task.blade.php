@@ -42,28 +42,24 @@
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-50">
+            {{-- Loop data dari controller --}}
+            @forelse($tasks as $task)
                 <x-task.table-row 
-                    name="Resume Pancasila BAB 2" 
-                    course="Kewarganegaraan" 
-                    due="22 Oct" 
-                    time="23.59" 
-                    status="Not Started" />
-
-                <x-task.table-row 
-                    name="Project Akhir KI" 
-                    course="Kecerdasan Artifisial Lanjut" 
-                    due="18 Oct" 
-                    time="23.59" 
-                    status="Done" />
-
-                <x-task.table-row 
-                    name="Laprak PAW BAB 1" 
-                    course="Kecerdasan Artifisial Lanjut" 
-                    due="11 Oct" 
-                    time="23.59" 
-                    status="In Progress" 
-                    checked />
-            </tbody>
+                    :id="$task['id'] ?? uniqid()"
+                    :name="$task['name'] ?? 'No Name'" 
+                    :course="$task['course'] ?? 'No Course'" 
+                    :due="$task['due'] ?? '-'" 
+                    :time="$task['time'] ?? '23.59'" 
+                    :status="$task['status'] ?? 'Not Started'"
+                    :checked="($task['status'] ?? '') === 'Done'"
+            @empty
+                <tr>
+                    <td colspan="6" class="py-10 text-center text-gray-400 text-sm italic">
+                        Belum ada tugas yang tercatat.
+                    </td>
+                </tr>
+            @endforelse
+        </tbody>
         </table>
     </main>
 </div>
