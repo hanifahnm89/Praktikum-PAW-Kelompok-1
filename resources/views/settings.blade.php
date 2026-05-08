@@ -124,9 +124,6 @@
                     @endforeach
                 </div>
 
-
-
-
                 <!-- OTHER DEVICES -->
                 <h3 class="text-sm font-semibold mb-3">Logins on other devices</h3>
 
@@ -254,109 +251,42 @@
 
                 </div>
 
-
                 <!-- RIGHT -->
                 <div>
 
-                    <div>
-                        <h3 class="font-semibold text-gray-800 mb-4">Reminder Settings</h3>
+                    <h3 class="font-semibold text-gray-800 mb-4">Reminder Settings</h3>
 
-                        <div class="space-y-3">
+                    <div class="space-y-3">
 
-                            <!-- OPTION -->
-                            <label class="flex justify-between items-center border rounded-xl px-4 py-3 cursor-pointer group">
-                                <span class="text-sm text-gray-700">10 Minutes</span>
+                        @foreach(['10 Minutes','30 Minutes','1 Hour','1 Day','3 Day','7 Day'] as $item)
+                        <label class="flex justify-between items-center border rounded-xl px-4 py-3 cursor-pointer">
 
-                                <div class="relative">
-                                    <input type="radio" name="reminder" class="peer hidden" checked>
+                            <span class="text-sm text-gray-700">{{ $item }}</span>
 
-                                    <!-- OUTER CIRCLE -->
-                                    <div class="w-5 h-5 rounded-full border-2 border-purple-500 flex items-center justify-center">
+                            <!-- RADIO ASLI -->
+                            <input
+                                type="radio"
+                                name="reminder"
+                                class="w-5 h-5 accent-purple-600 cursor-pointer"
+                                {{ $loop->first ? 'checked' : '' }}>
 
-                                        <!-- INNER DOT -->
-                                        <div class="w-2.5 h-2.5 bg-purple-600 rounded-full hidden peer-checked:block"></div>
+                        </label>
+                        @endforeach
 
-                                    </div>
-                                </div>
-                            </label>
-
-                            <label class="flex justify-between items-center border rounded-xl px-4 py-3 cursor-pointer">
-                                <span class="text-sm text-gray-700">30 Minutes</span>
-
-                                <div class="relative">
-                                    <input type="radio" name="reminder" class="peer hidden">
-
-                                    <div class="w-5 h-5 rounded-full border-2 border-purple-500 flex items-center justify-center">
-                                        <div class="w-2.5 h-2.5 bg-purple-600 rounded-full hidden peer-checked:block"></div>
-                                    </div>
-                                </div>
-                            </label>
-
-                            <label class="flex justify-between items-center border rounded-xl px-4 py-3 cursor-pointer">
-                                <span class="text-sm text-gray-700">1 Hour</span>
-
-                                <div class="relative">
-                                    <input type="radio" name="reminder" class="peer hidden">
-
-                                    <div class="w-5 h-5 rounded-full border-2 border-purple-500 flex items-center justify-center">
-                                        <div class="w-2.5 h-2.5 bg-purple-600 rounded-full hidden peer-checked:block"></div>
-                                    </div>
-                                </div>
-                            </label>
-
-                            <label class="flex justify-between items-center border rounded-xl px-4 py-3 cursor-pointer">
-                                <span class="text-sm text-gray-700">1 Day</span>
-
-                                <div class="relative">
-                                    <input type="radio" name="reminder" class="peer hidden">
-
-                                    <div class="w-5 h-5 rounded-full border-2 border-purple-500 flex items-center justify-center">
-                                        <div class="w-2.5 h-2.5 bg-purple-600 rounded-full hidden peer-checked:block"></div>
-                                    </div>
-                                </div>
-                            </label>
-
-                            <label class="flex justify-between items-center border rounded-xl px-4 py-3 cursor-pointer">
-                                <span class="text-sm text-gray-700">3 Day</span>
-
-                                <div class="relative">
-                                    <input type="radio" name="reminder" class="peer hidden">
-
-                                    <div class="w-5 h-5 rounded-full border-2 border-purple-500 flex items-center justify-center">
-                                        <div class="w-2.5 h-2.5 bg-purple-600 rounded-full hidden peer-checked:block"></div>
-                                    </div>
-                                </div>
-                            </label>
-
-                            <label class="flex justify-between items-center border rounded-xl px-4 py-3 cursor-pointer">
-                                <span class="text-sm text-gray-700">7 Day</span>
-
-                                <div class="relative">
-                                    <input type="radio" name="reminder" class="peer hidden">
-
-                                    <div class="w-5 h-5 rounded-full border-2 border-purple-500 flex items-center justify-center">
-                                        <div class="w-2.5 h-2.5 bg-purple-600 rounded-full hidden peer-checked:block"></div>
-                                    </div>
-                                </div>
-                            </label>
-
-                        </div>
-
-                        <button class="mt-4 bg-purple-600 text-white text-xs px-4 py-2 rounded-lg flex items-center gap-2">
-                            Add Custom Time +
-                        </button>
                     </div>
 
+                    <button class="mt-4 bg-purple-600 text-white text-xs px-4 py-2 rounded-lg flex items-center gap-2">
+                        Add Custom Time +
+                    </button>
 
                 </div>
-
             </div>
 
         </div>
+</div>
 
 </div>
 </main>
-</div>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
