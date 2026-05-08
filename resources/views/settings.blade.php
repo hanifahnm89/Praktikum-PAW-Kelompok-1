@@ -311,7 +311,7 @@
             resetTabs();
             this.classList.add("border-b-2", "border-primary", "text-primary", "font-bold");
             account.classList.remove("hidden");
-        });
+        })
 
         document.getElementById("tab-security").addEventListener("click", function() {
             resetTabs();
