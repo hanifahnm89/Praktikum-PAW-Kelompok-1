@@ -20,9 +20,10 @@
         </form>
         </td>
     <td class="py-6 pl-4">
-        <a href="{{ route('tasks.detail') }}" class="text-sm font-medium text-gray-700 hover:text-primary hover:underline transition">
-            {{ $name }}
-        </a>
+        <a href="{{ route('tasks.detail', ['id' => $id]) }}"
+   class="text-sm font-medium text-gray-700 hover:text-primary hover:underline transition">
+    {{ $name }}
+</a>
     </td>
     <td class="py-6 text-sm text-gray-500">{{ $course }}</td>
     <td class="py-6 text-sm text-gray-500">{{ $due }}</td>

@@ -3,16 +3,14 @@
 @section('content')
 <div class="flex min-h-screen bg-white">
     <x-sidebar />
-
     <main class="ml-64 flex-1 p-12">
         <div class="flex justify-between items-center mb-10">
             <h2 class="text-3xl font-bold text-primary">All Task</h2>
-            <button onclick="window.location.href='{{ route('tasks.create') }}'" 
+            <button onclick="window.location.href='{{ route('tasks.create') }}';" 
                 class="bg-indigo-50 text-primary px-6 py-2 rounded-xl text-xs font-bold hover:bg-indigo-100 transition">
                 + New Task
             </button>
         </div>
-
         <div class="flex justify-between items-end mb-12">
             <div class="relative w-2/3">
                 <i class="ph ph-magnifying-glass absolute left-0 top-1 text-gray-300 text-xl"></i>
@@ -29,7 +27,6 @@
                 <i class="ph ph-caret-down absolute right-4 top-3.5 text-primary"></i>
             </div>
         </div>
-
         <table class="w-full text-left">
             <thead>
                 <tr class="text-primary text-xs font-bold uppercase tracking-wider border-b border-gray-50">

@@ -14,24 +14,38 @@ class TaskController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $path = 'tasks.json';
-        $tasks = Storage::exists($path) ? json_decode(Storage::get($path), true) : [];
+{
+    $path = 'tasks.json';
 
-        $newTask = [
-            'id' => uniqid(),
-            'name' => $request->task_name,
-            'course' => $request->course,
-            'due' => $request->deadline,
-            'time' => '23.59',
-            'status' => 'Not Started'
-        ];
+    $tasks = Storage::exists($path)
+        ? json_decode(Storage::get($path), true)
+        : [];
 
-        $tasks[] = $newTask; 
-        Storage::put($path, json_encode($tasks, JSON_PRETTY_PRINT)); 
+    $newTask = [
+        'id' => uniqid(),
 
-        return redirect()->route('all-task')->with('success', 'Tugas berhasil ditambah!');
-    }
+        // IMPORTANT
+        'title' => $request->task_name,
+        'course' => $request->course,
+        'date' => $request->deadline,
+
+        // tambahan
+        'time' => $request->time ?? '23:59',
+        'priority' => $request->priority ?? 'Medium',
+        'status' => $request->status ?? 'Not Started',
+    ];
+
+    $tasks[] = $newTask;
+
+    Storage::put(
+        $path,
+        json_encode($tasks, JSON_PRETTY_PRINT)
+    );
+
+    return redirect()
+        ->route('all-task')
+        ->with('success', 'Tugas berhasil ditambah!');
+}
 
     public function dashboard(){
 
@@ -52,23 +66,50 @@ class TaskController extends Controller
         ]);
     }
 
-    public function updateStatus($id) {
-        $path = 'tasks.json';
-        $tasks = Storage::exists($path) ? json_decode(Storage::get($path), true) : [];
+    public function updateStatus($id)
+{
+    $path = 'tasks.json';
 
-        // Pastikan $tasks itu array
-        if (!is_array($tasks)) $tasks = [];
+    $tasks = Storage::exists($path)
+        ? json_decode(Storage::get($path), true)
+        : [];
 
-        foreach ($tasks as &$task) {
-            // Tambahin isset() biar kalau 'id' gak ada, dia gak error tapi di-skip aja
-            if (isset($task['id']) && $task['id'] == $id) {
-                $task['status'] = 'Done';
-                break;
-            }
-        }
-
-        Storage::put($path, json_encode($tasks, JSON_PRETTY_PRINT));
-
-        return back()->with('success', 'Hore! Task berhasil diselesaikan.');
+    if (!is_array($tasks)) {
+        $tasks = [];
     }
+
+    foreach ($tasks as &$task) {
+
+        if (isset($task['id']) && $task['id'] == $id) {
+
+            $task['status'] = 'Done';
+
+            break;
+        }
+    }
+
+    Storage::put(
+        $path,
+        json_encode($tasks, JSON_PRETTY_PRINT)
+    );
+
+    // BALIK KE HALAMAN SEBELUMNYA
+    return back()->with(
+        'success',
+        'Task berhasil diselesaikan!'
+    );
+}
+
+    public function detail($id)
+{
+    $path = 'tasks.json';
+
+    $tasks = Storage::exists($path)
+        ? json_decode(Storage::get($path), true)
+        : [];
+
+    $task = collect($tasks)->firstWhere('id', $id);
+
+    return view('tasks.detail', compact('task'));
+}
 }

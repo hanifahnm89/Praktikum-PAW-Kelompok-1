@@ -10,58 +10,97 @@ class CalendarController extends Controller
 {
     public function index(Request $request)
     {
-        // 1. PROTEKSI LOGIN MANUAL (Syarat Asdos)
+        // LOGIN CHECK
         if (!session()->has('user')) {
-            return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
+            return redirect()->route('login')
+                ->with('error', 'Silakan login terlebih dahulu.');
         }
 
-        // 2. Tentukan Bulan dan Tahun dari Request atau Default sekarang
-        $month = $request->month ?? now()->month;
-        $year = $request->year ?? now()->year;
+        if ($request->has('month')) {
 
-        // Inisialisasi Carbon untuk navigasi kalender
-        $date = Carbon::create($year, $month, 1);
+            $date = Carbon::createFromFormat('Y-m', $request->month);
+        } else {
+
+            $date = now();
+        }
+
+        $month = $date->month;
+        $year = $date->year;
+
+        // TOTAL HARI DALAM BULAN
         $daysInMonth = $date->daysInMonth;
 
-        // 3. BACA DATA DARI JSON (Pengganti Database)
+        // POSISI HARI PERTAMA
+        $startDay = $date->copy()->startOfMonth()->dayOfWeekIso - 1;
+
+        // TOTAL CELL KALENDER
+        $totalCells = ceil(($daysInMonth + $startDay) / 7) * 7;
+
+        // AMBIL TASK JSON
         $path = 'tasks.json';
-        $allTasks = Storage::exists($path) ? json_decode(Storage::get($path), true) : [];
 
-        // 4. FILTER DATA BERDASARKAN BULAN & TAHUN (Versi Anti-Error)
-        $events = collect($allTasks)->filter(function ($task) use ($month, $year) {
-            if (!isset($task['due'])) return false;
+        $allTasks = Storage::exists($path)
+            ? json_decode(Storage::get($path), true)
+            : [];
 
-            try {
-                // Konversi bulan Indonesia ke Inggris agar Carbon paham
-                $dateString = $this->translateDate($task['due']);
-                $taskDate = Carbon::parse($dateString);
-                
-                return $taskDate->month == $month && $taskDate->year == $year;
-            } catch (\Exception $e) {
-                return false; // Skip data jika format tanggal rusak
-            }
-        })->groupBy(function($task) {
-            try {
-                $dateString = $this->translateDate($task['due']);
-                return Carbon::parse($dateString)->format('Y-m-d');
-            } catch (\Exception $e) {
-                return 'invalid-date';
-            }
-        });
+        // FILTER EVENT
+        $events = collect($allTasks)
+            ->filter(function ($task) use ($month, $year) {
 
-        return view('calendar', compact('date', 'daysInMonth', 'events', 'month', 'year'));
+                if (!isset($task['due'])) return false;
+
+                try {
+
+                    $dateString = $this->translateDate($task['due']);
+
+                    $taskDate = Carbon::parse($dateString);
+
+                    return $taskDate->month == $month
+                        && $taskDate->year == $year;
+                } catch (\Exception $e) {
+
+                    return false;
+                }
+            })
+            ->groupBy(function ($task) {
+
+                try {
+
+                    $dateString = $this->translateDate($task['due']);
+
+                    return Carbon::parse($dateString)
+                        ->format('Y-m-d');
+                } catch (\Exception $e) {
+
+                    return 'invalid-date';
+                }
+            });
+
+        return view('calendar', compact(
+            'date',
+            'daysInMonth',
+            'startDay',
+            'totalCells',
+            'events',
+            'month',
+            'year'
+        ));
     }
-
-    /**
-     * Fungsi pembantu untuk menerjemahkan nama bulan Indonesia ke Inggris
-     */
     private function translateDate($dateString)
     {
         $months = [
-            'januari' => 'january', 'februari' => 'february', 'maret' => 'march',
-            'april' => 'april', 'mei' => 'may', 'juni' => 'june',
-            'juli' => 'july', 'agustus' => 'august', 'september' => 'september',
-            'oktober' => 'october', 'november' => 'november', 'desember' => 'december'
+            'januari' => 'january',
+            'februari' => 'february',
+            'maret' => 'march',
+            'april' => 'april',
+            'mei' => 'may',
+            'juni' => 'june',
+            'juli' => 'july',
+            'agustus' => 'august',
+            'september' => 'september',
+            'oktober' => 'october',
+            'november' => 'november',
+            'desember' => 'december'
         ];
 
         return strtr(strtolower($dateString), $months);
