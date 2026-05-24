@@ -167,7 +167,7 @@
 
 
         <!-- NOTIFICATION CONTENT -->
-        <div id="content-notification" class="hidden">
+        <div id="content-notification" class="hidden bg-white rounded-[32px] p-10 shadow-sm border border-gray-100">
 
             <div class="grid grid-cols-2 gap-10">
 
@@ -185,7 +185,7 @@
 
                             <div class="relative">
                                 <input type="checkbox" checked class="sr-only peer">
-                                <div class="w-10 h-5 bg-gray-300 rounded-full peer-checked:bg-[#6d3df5] transition"></div>
+                                <div class="w-10 h-5 bg-gray-300 rounded-full peer-checked:bg-primary transition"></div>
                                 <div class="w-4 h-4 bg-white rounded-full absolute top-0.5 left-0.5 transition peer-checked:translate-x-5"></div>
                             </div>
                         </label>
@@ -195,7 +195,7 @@
 
                             <div class="relative">
                                 <input type="checkbox" checked class="sr-only peer">
-                                <div class="w-10 h-5 bg-gray-300 rounded-full peer-checked:bg-[#6d3df5] transition"></div>
+                                <div class="w-10 h-5 bg-gray-300 rounded-full peer-checked:bg-primary transition"></div>
                                 <div class="w-4 h-4 bg-white rounded-full absolute top-0.5 left-0.5 transition peer-checked:translate-x-5"></div>
                             </div>
                         </label>
@@ -205,7 +205,7 @@
 
                             <div class="relative">
                                 <input type="checkbox" class="sr-only peer">
-                                <div class="w-10 h-5 bg-gray-300 rounded-full peer-checked:bg-[#6d3df5] transition"></div>
+                                <div class="w-10 h-5 bg-gray-300 rounded-full peer-checked:bg-primary transition"></div>
                                 <div class="w-4 h-4 bg-white rounded-full absolute top-0.5 left-0.5 transition peer-checked:translate-x-5"></div>
                             </div>
                         </label>
@@ -222,7 +222,7 @@
 
                             <div class="relative">
                                 <input type="checkbox" checked class="sr-only peer">
-                                <div class="w-10 h-5 bg-gray-300 rounded-full peer-checked:bg-[#6d3df5] transition"></div>
+                                <div class="w-10 h-5 bg-gray-300 rounded-full peer-checked:bg-primary transition"></div>
                                 <div class="w-4 h-4 bg-white rounded-full absolute top-0.5 left-0.5 transition peer-checked:translate-x-5"></div>
                             </div>
                         </label>
@@ -232,7 +232,7 @@
 
                             <div class="relative">
                                 <input type="checkbox" checked class="sr-only peer">
-                                <div class="w-10 h-5 bg-gray-300 rounded-full peer-checked:bg-[#6d3df5] transition"></div>
+                                <div class="w-10 h-5 bg-gray-300 rounded-full peer-checked:bg-primary transition"></div>
                                 <div class="w-4 h-4 bg-white rounded-full absolute top-0.5 left-0.5 transition peer-checked:translate-x-5"></div>
                             </div>
                         </label>
@@ -242,7 +242,7 @@
 
                             <div class="relative">
                                 <input type="checkbox" class="sr-only peer">
-                                <div class="w-10 h-5 bg-gray-300 rounded-full peer-checked:bg-[#6d3df5] transition"></div>
+                                <div class="w-10 h-5 bg-gray-300 rounded-full peer-checked:bg-primary transition"></div>
                                 <div class="w-4 h-4 bg-white rounded-full absolute top-0.5 left-0.5 transition peer-checked:translate-x-5"></div>
                             </div>
                         </label>
@@ -267,7 +267,7 @@
                             <input
                                 type="radio"
                                 name="reminder"
-                                class="w-5 h-5 accent-purple-600 cursor-pointer"
+                                class="w-5 h-5 accent-primary cursor-pointer"
                                 {{ $loop->first ? 'checked' : '' }}>
 
                         </label>
@@ -275,7 +275,7 @@
 
                     </div>
 
-                    <button class="mt-4 bg-purple-600 text-white text-xs px-4 py-2 rounded-lg flex items-center gap-2">
+                    <button class="mt-4 bg-primary text-white text-xs font-bold px-6 py-2 rounded-lg flex items-center gap-4">
                         Add Custom Time +
                     </button>
 

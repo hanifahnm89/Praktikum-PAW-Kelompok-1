@@ -1,4 +1,4 @@
-@props(['id', 'name', 'course', 'due', 'time', 'status', 'checked' => false])
+@props(['id', 'task_name', 'course', 'due', 'time', 'status', 'checked' => false])
 
 @php
     $statusClasses = [
@@ -10,18 +10,17 @@
 
 <tr class="border-b border-gray-50 group hover:bg-gray-50/50 transition">
     <td class="py-6">
-        {{-- Form ini akan mengirim ID task ke controller --}}
         <form action="{{ route('tasks.updateStatus', $id) }}" method="POST">
             @csrf
             <input type="checkbox" 
                 {{ $status === 'Done' ? 'checked disabled' : '' }} 
-                onchange="this.form.submit()" {{-- INI KUNCINYA --}}
+                onchange="this.form.submit()" 
                 class="w-4 h-4 accent-primary rounded border-gray-300 cursor-pointer">
         </form>
         </td>
     <td class="py-6 pl-4">
-        <a href="{{ route('tasks.detail') }}" class="text-sm font-medium text-gray-700 hover:text-primary hover:underline transition">
-            {{ $name }}
+        <a href="{{ route('tasks.detail', $id) }}" class="text-sm font-medium text-gray-700 hover:text-primary hover:underline transition">
+            {{ $task_name }}
         </a>
     </td>
     <td class="py-6 text-sm text-gray-500">{{ $course }}</td>

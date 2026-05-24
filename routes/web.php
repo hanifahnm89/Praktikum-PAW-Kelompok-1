@@ -29,23 +29,8 @@ Route::post('/login', [AuthController::class, 'login'])->name('login.check');
 Route::post('/register', [AuthController::class, 'register'])->name('register.store');
 
 
-Route::get('/dashboard', function () {
-    if (!session()->has('user')) return redirect()->route('login')->with('error', 'Silakan login dulu!');
-
-    $user = session('user');
-    $userName = $user['name'] ?? 'Guest';
-
-    $path = 'tasks.json';
-    $tasks = Storage::exists($path) ? json_decode(Storage::get($path), true) : [];
-    if (!is_array($tasks)) { $tasks = []; }
-
-    $totalTask = count($tasks);
-    $completedCount = count(array_filter($tasks, function ($task) {
-        return ($task['status'] ?? '') === 'Done';
-    }));
-
-    return view('dashboard', compact('userName', 'tasks', 'totalTask', 'completedCount'));
-})->name('dashboard');
+Route::get('/dashboard', [TaskController::class, 'dashboard'])
+    ->name('dashboard');
 
 Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar');
 

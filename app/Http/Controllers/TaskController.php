@@ -3,72 +3,74 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Task;
 
 class TaskController extends Controller
 {
     public function index()
     {
-        $path = 'tasks.json';
-        $tasks = Storage::exists($path) ? json_decode(Storage::get($path), true) : [];
+        $tasks = Task::where('user_id', session('user')['id'])->get();
         return view('all-task', compact('tasks'));
     }
 
     public function store(Request $request)
     {
-        $path = 'tasks.json';
-        $tasks = Storage::exists($path) ? json_decode(Storage::get($path), true) : [];
+        $request->validate([
+            'task_name' => 'required',
+            'course' => 'required',
+            'due_date' => 'required|date',
+        ]);
 
-        $newTask = [
-            'id' => uniqid(),
-            'name' => $request->task_name,
+        Task::create([
+            'user_id' => session('user')['id'],
+            'task_name' => $request->task_name,
             'course' => $request->course,
-            'due' => $request->deadline,
-            'time' => '23.59',
+            'due_date' => $request->due_date,
             'status' => 'Not Started'
-        ];
-
-        $tasks[] = $newTask; 
-        Storage::put($path, json_encode($tasks, JSON_PRETTY_PRINT)); 
+        ]);
 
         return redirect()->route('all-task')->with('success', 'Tugas berhasil ditambah!');
     }
 
-    public function dashboard(){
-
+    public function dashboard()
+    {
         $user = session('user');
-        $userName = $user ? $user['name'] : 'Guest';
+        
+        $firstName = $user['first_name'] ?? 'Ifka';
 
-        $path = 'tasks.json';
-        $tasks = \Storage::exists($path) ? json_decode(\Storage::get($path), true) : [];
+        $tasks = Task::where('user_id', session('user')['id'])->get();
 
-        $totalTask = count($tasks);
-        $completedCount = count(array_filter($tasks, fn($t) => $t['status'] === 'Done'));
+        $totalTask = $tasks->count();
+        $completedCount = $tasks->where('status', 'Done')->count();
+        $inProgressCount = $tasks->where('status', '!=', 'Done')->count();
 
         return view('dashboard', [
-            'userName' => $userName,
+            'firstName' => $firstName,
             'tasks' => $tasks,
             'totalTask' => $totalTask,
-            'completedCount' => $completedCount
+            'completedCount' => $completedCount,
+            'inProgressCount' => $inProgressCount 
         ]);
     }
 
-    public function updateStatus($id) {
-        $path = 'tasks.json';
-        $tasks = Storage::exists($path) ? json_decode(Storage::get($path), true) : [];
+    public function detail($id)
+    {
+        $task = Task::where('id', $id)
+            ->where('user_id', session('user.id'))
+            ->firstOrFail();
 
-        // Pastikan $tasks itu array
-        if (!is_array($tasks)) $tasks = [];
+        return view('tasks.detail', compact('task'));
+    }
 
-        foreach ($tasks as &$task) {
-            // Tambahin isset() biar kalau 'id' gak ada, dia gak error tapi di-skip aja
-            if (isset($task['id']) && $task['id'] == $id) {
-                $task['status'] = 'Done';
-                break;
-            }
+    public function updateStatus($id) 
+    {
+        $task = Task::where('id', $id) ->where('user_id', session('user')['id']);
+
+        if ($task) {
+            $task->update(['status' => 'Done']);
+            return back()->with('success', 'Hore! Task berhasil diselesaikan.');
         }
 
-        Storage::put($path, json_encode($tasks, JSON_PRETTY_PRINT));
-
-        return back()->with('success', 'Hore! Task berhasil diselesaikan.');
+        return back()->with('error', 'Tugas tidak ditemukan.');
     }
 }

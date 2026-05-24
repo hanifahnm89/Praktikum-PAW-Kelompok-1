@@ -19,31 +19,18 @@ class AuthController extends Controller
         $request->validate([
             'first_name' => 'required|string|max:100',
             'last_name'  => 'required|string|max:100',
-            'email'      => 'required|email',
+            'email'      => 'required|email|unique:users,email', // Validasi unik di tabel users
             'password'   => 'required|min:8|confirmed',
         ]);
 
-        $users = $this->getUsers();
-
-        foreach ($users as $user) {
-            if ($user['email'] === $request->email) {
-                return back()->withErrors(['email' => 'Email sudah terdaftar!'])->withInput();
-            }
-        }
-
-        $fullName = $request->first_name . ' ' . $request->last_name;
-
-        $newUser = [
-            'id'         => uniqid(),
-            'name'       => $fullName,
+        // Simpan ke Database menggunakan Eloquent
+        \App\Models\User::create([
             'first_name' => $request->first_name,
             'last_name'  => $request->last_name,
+            'name'       => $request->first_name . ' ' . $request->last_name,
             'email'      => $request->email,
-            'password'   => Hash::make($request->password),
-        ];
-
-        $users[] = $newUser;
-        Storage::put($this->path, json_encode($users, JSON_PRETTY_PRINT));
+            'password'   => \Hash::make($request->password), // Hashing wajib
+        ]);
 
         return redirect()->route('login')->with('success', 'Berhasil daftar! Silakan login.');
     }
@@ -54,22 +41,20 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $users = $this->getUsers();
+        // Cari user di database berdasarkan email
+        $user = \App\Models\User::where('email', $credentials['email'])->first();
 
-        foreach ($users as $user) {
-            if ($user['email'] === $credentials['email'] && Hash::check($credentials['password'], $user['password'])) {
-                
-                session(['user' => $user]);
+        // Verifikasi password hash
+        if ($user && \Hash::check($credentials['password'], $user->password)) {
+            // Simpan data user ke session (Manual Auth)
+            session(['user' => $user->toArray()]);
+            $request->session()->regenerate(); // Regenerasi session untuk keamanan
 
-                $request->session()->regenerate();
-
-                return redirect()->route('dashboard')->with('success', 'Selamat datang, ' . $user['name']);
-            }
+            return redirect()->route('dashboard');
         }
 
         return back()->withErrors(['email' => 'Email atau password salah!'])->withInput();
     }
-
     public function logout(Request $request) {
         $request->session()->invalidate();
         $request->session()->regenerateToken();

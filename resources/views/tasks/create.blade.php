@@ -13,7 +13,7 @@
             <x-common.form-input name="course" label="Course *" placeholder="Enter Course Name" />
 
             <div class="grid grid-cols-2 gap-4">
-                <x-common.form-input name="deadline" label="Deadline *" placeholder="Enter Date" />
+                <x-common.form-input name="due_date" type="date" label="Deadline *" placeholder="Enter Date" />
                 <x-common.form-input name="priority" label="Priority *" placeholder="Set Priority" />
             </div>
 

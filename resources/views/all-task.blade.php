@@ -16,21 +16,19 @@
         <div class="flex justify-between items-end mb-12">
             <div class="relative w-2/3">
                 <i class="ph ph-magnifying-glass absolute left-0 top-1 text-gray-300 text-xl"></i>
-                <input type="text" placeholder="Search tasks" 
-                    class="w-full pl-8 pb-2 border-b border-gray-100 outline-none text-sm italic text-gray-400 bg-transparent">
+                <input type="text" id="searchInput" placeholder="Search tasks by name..." 
+                    class="w-full pl-8 pb-2 border-b border-gray-100 outline-none text-sm text-gray-400 bg-transparent">
             </div>
 
             <div class="relative">
-                <select class="appearance-none bg-indigo-50 text-primary text-xs font-bold py-3 px-6 pr-12 rounded-xl outline-none border-none">
-                    <option>All Courses</option>
-                    <option>Kecerdasan Artifisial</option>
-                    <option>PAW</option>
+                <select id="courseFilter" class="appearance-none bg-indigo-50 text-primary text-xs font-bold py-3 px-6 pr-12 rounded-xl outline-none border-none">
+                    <option value="">All Courses</option>
                 </select>
                 <i class="ph ph-caret-down absolute right-4 top-3.5 text-primary"></i>
             </div>
         </div>
 
-        <table class="w-full text-left">
+        <table class="w-full text-left" id="taskTable">
             <thead>
                 <tr class="text-primary text-xs font-bold uppercase tracking-wider border-b border-gray-50">
                     <th class="pb-6 w-10"></th>
@@ -42,25 +40,48 @@
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-50">
-            {{-- Loop data dari controller --}}
             @forelse($tasks as $task)
-                <x-task.table-row 
-                    :id="$task['id'] ?? uniqid()"
-                    :name="$task['name'] ?? 'No Name'" 
-                    :course="$task['course'] ?? 'No Course'" 
-                    :due="$task['due'] ?? '-'" 
-                    :time="$task['time'] ?? '23.59'" 
-                    :status="$task['status'] ?? 'Not Started'"
-                    :checked="($task['status'] ?? '') === 'Done'"
+                <tr class="task-row">
+                    <x-task.table-row 
+                        :id="$task->id"
+                        :task_name="$task->task_name" 
+                        :course="$task->course" 
+                        :due="$task->due_date"
+                        :time="$task->time ?? '23.59'" 
+                        :status="$task->status"
+                        :checked="$task->status === 'Done'"
+                    />
+                </tr>
             @empty
                 <tr>
-                    <td colspan="6" class="py-10 text-center text-gray-400 text-sm italic">
+                    <td colspan="6" class="py-10 text-center text-gray-400 text-sm">
                         Belum ada tugas yang tercatat.
                     </td>
                 </tr>
             @endforelse
-        </tbody>
+            </tbody>
         </table>
     </main>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('searchInput');
+        const taskRows = document.querySelectorAll('.task-row');
+
+        searchInput.addEventListener('keyup', function() {
+            const searchTerm = searchInput.value.toLowerCase();
+
+            taskRows.forEach(row => {
+                const taskName = row.innerText.toLowerCase();
+                
+                if (taskName.includes(searchTerm)) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        });
+    });
+</script>
 @endsection

@@ -3,13 +3,26 @@
         <img src="{{ asset('images/logo-lumina.png') }}" class="h-8">
     </div>
 
-    <div class="flex items-center gap-3 mb-10 p-3 bg-gray-50 rounded-2xl">
-        <img src="{{ asset('images/ifka.png') }}" class="w-12 h-12 rounded-full object-cover">
-        <div>
-            <h4 class="font-bold text-sm">ifka</h4>
-            <p class="text-[10px] text-gray-400">Student</p>
+        @php
+            $user = session('user');
+        @endphp
+
+        <div class="mb-8">
+            <div class="flex items-center gap-3 bg-white rounded-2xl px-2 py-4 w-[220px]">
+                <img src="{{ asset('images/user.jpg') }}" 
+                    class="w-12 h-12 rounded-full object-cover">
+
+                <div>
+                    <h4 class="font-bold text-sm">
+                        {{ $user['first_name'] ?? 'User' }}
+                    </h4>
+
+                    <p class="text-[10px] text-gray-400">
+                        {{ $user['role'] ?? 'Student' }}
+                    </p>
+                </div>
+            </div>
         </div>
-    </div>
 
 <nav class="space-y-2 flex-1">
     <a href="/dashboard" class="flex items-center gap-4 p-3 rounded-xl {{ request()->is('dashboard') ? 'bg-indigo-50 text-primary font-bold' : 'text-gray-400 hover:bg-gray-50' }} transition">
@@ -23,7 +36,7 @@
     </a>
 
         <a href="{{ route('tasks.detail') }}" class="flex items-center gap-4 p-3 rounded-xl text-gray-400 hover:bg-gray-50 transition">
-        <i class="ph ph-calendar text-xl"></i> 
+        <i class="ph ph-clipboard-text text-xl"></i> 
         <span class="text-sm font-medium">Task</span>
     </a>
 
