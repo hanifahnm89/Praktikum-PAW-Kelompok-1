@@ -19,9 +19,16 @@
         </form>
         </td>
     <td class="py-6 pl-4">
+<<<<<<< HEAD
         <a href="{{ route('tasks.detail', $id) }}" class="text-sm font-medium text-gray-700 hover:text-primary hover:underline transition">
             {{ $task_name }}
         </a>
+=======
+        <a href="{{ route('tasks.detail', ['id' => $id]) }}"
+   class="text-sm font-medium text-gray-700 hover:text-primary hover:underline transition">
+    {{ $name }}
+</a>
+>>>>>>> e36a333b9ecb01483c870dce597133429f1d57df
     </td>
     <td class="py-6 text-sm text-gray-500">{{ $course }}</td>
     <td class="py-6 text-sm text-gray-500">{{ $due }}</td>
