@@ -51,53 +51,168 @@
             @endphp
 
 
-<div class="relative mb-12">
-    <i class="ph ph-magnifying-glass absolute left-0 top-1 text-gray-300 text-xl"></i>
-    <input type="text" id="dashboardSearch" placeholder="Search tasks" class="w-full pl-8 pb-3 border-b border-gray-100 outline-none text-sm text-gray-500 bg-transparent">
-</div>
+        <div class="relative mb-12">
+            <i class="ph ph-magnifying-glass absolute left-0 top-1 text-gray-300 text-xl"></i>
 
-@php
-    $activeTasks = collect($tasks ?? [])->where('status', '!=', 'Done');
-@endphp
+            <input
+                type="text"
+                id="dashboardSearch"
+                placeholder="Search tasks"
+                class="w-full pl-8 pb-3 border-b border-gray-100 outline-none text-sm text-gray-500 bg-transparent">
+        </div>
 
         @if($activeTasks->count() > 0)
-            <div class="bg-white rounded-xl overflow-hidden">
-                <table class="w-full text-left border-collapse" id="dashboardTable">
-                    <tbody class="divide-y divide-gray-50">
-                       @foreach($activeTasks as $task)
-                            <tr class="task-row">
-                                <x-task.table-row 
-                                    :id="$task->id" 
-                                    :task_name="$task->task_name" 
-                                    :course="$task->course" 
-                                    :due="$task->due_date" 
-                                    :time="$task->time ?? '23.59'" 
-                                    :status="$task->status" 
-                                />
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        @else
-            <div class="flex flex-col items-center justify-center py-20 bg-white rounded-[40px]">
-                <img src="{{ asset('images/done-task.png') }}" class="w-64 mb-8 opacity-60" alt="No Assignments">
-                <p class="text-gray-400 font-medium text-lg">Hooray! You don't have any assignments yet</p>
-                <button onclick="window.location.href='/tasks/create'" class="mt-4 text-primary font-bold hover:underline">
-                    + Start by adding a task
-                </button>
-            </div>
-        @endif
-        <script>
-            document.getElementById('dashboardSearch').addEventListener('keyup', function() {
-                let filter = this.value.toLowerCase();
-                let rows = document.querySelectorAll('.task-row');
 
-                rows.forEach(row => {
-                    let text = row.innerText.toLowerCase();
-                    row.style.display = text.includes(filter) ? "" : "none";
-                });
+        <div class="bg-white rounded-xl overflow-hidden">
+            <table class="w-full text-left border-collapse">
+
+                <tbody id="dashboardTaskBody" class="divide-y divide-gray-50">
+
+                    @foreach($activeTasks as $task)
+                    <tr class="task-row">
+
+                        <x-task.table-row
+                            :id="$task->id"
+                            :task_name="$task->task_name"
+                            :course="$task->course"
+                            :due="$task->due_date"
+                            :time="$task->time ?? '23:59'"
+                            :status="$task->status"
+                        />
+
+                    </tr>
+                    @endforeach
+
+                </tbody>
+
+            </table>
+        </div>
+
+        @else
+
+        <div class="flex flex-col items-center justify-center py-20 bg-white rounded-[40px]">
+
+            <img
+                src="{{ asset('images/done-task.png') }}"
+                class="w-64 mb-8 opacity-60">
+
+            <p class="text-gray-400 font-medium text-lg">
+                Hooray! You don't have any assignments yet
+            </p>
+
+        </div>
+
+        @endif
+
+        <script>
+
+        document.getElementById('dashboardSearch')
+        .addEventListener('keyup', async function () {
+
+            let keyword = this.value;
+
+            let response = await fetch(
+                `/tasks/search?search=${keyword}`
+            );
+
+            let tasks = await response.json();
+
+            let body = document.getElementById(
+                'dashboardTaskBody'
+            );
+
+            body.innerHTML = '';
+
+            tasks.forEach(task => {
+
+                if (task.status === 'Done') return;
+
+                let badgeClass = '';
+
+                if (task.status === 'Not Started') {
+
+                    badgeClass =
+                        'bg-red-100 text-red-400';
+
+                } else {
+
+                    badgeClass =
+                        'bg-yellow-50 text-yellow-500';
+
+                }
+
+                body.innerHTML += `
+
+                <tr class="border-b border-gray-50 group hover:bg-gray-50/50 transition">
+
+                    <td class="py-6">
+
+                        <input
+                            type="checkbox"
+                            ${task.status === 'Done' ? 'checked' : ''}
+
+                            class="
+                            w-4
+                            h-4
+                            accent-primary
+                            rounded">
+
+                    </td>
+
+                    <td class="py-6 pl-4">
+
+                        <a
+                            href="/tasks/detail/${task.id}"
+
+                            class="
+                            text-sm
+                            font-medium
+                            text-gray-700
+                            hover:text-primary
+                            hover:underline">
+
+                            ${task.task_name}
+
+                        </a>
+
+                    </td>
+
+                    <td class="py-6 text-sm text-gray-500">
+                        ${task.course}
+                    </td>
+
+                    <td class="py-6 text-sm text-gray-500">
+                        ${task.due_date}
+                    </td>
+
+                    <td class="py-6 text-sm text-gray-500">
+                        ${task.time ?? '23:59'}
+                    </td>
+
+                    <td class="py-6 text-right">
+
+                        <span class="
+                            ${badgeClass}
+                            px-4
+                            py-1.5
+                            rounded-lg
+                            text-[10px]
+                            font-bold">
+
+                            ${task.status}
+
+                        </span>
+
+                    </td>
+
+                </tr>
+
+                `;
+
             });
+
+        });
+
         </script>
         </div>
     </main>

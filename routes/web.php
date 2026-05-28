@@ -62,44 +62,8 @@ Route::post('/register', [AuthController::class, 'register'])
 |--------------------------------------------------------------------------
 */
 
-Route::get('/dashboard', function () {
-
-    if (!session()->has('user')) {
-        return redirect()->route('login')
-            ->with('error', 'Silakan login dulu!');
-    }
-
-    $user = session('user');
-
-    $userName = $user['name'] ?? 'Guest';
-
-    $path = 'tasks.json';
-
-    $tasks = Storage::exists($path)
-        ? json_decode(Storage::get($path), true)
-        : [];
-
-    if (!is_array($tasks)) {
-        $tasks = [];
-    }
-
-    $totalTask = count($tasks);
-
-    $completedCount = count(array_filter($tasks, function ($task) {
-
-        return ($task['status'] ?? '') === 'Done';
-
-    }));
-
-    return view('dashboard', compact(
-        'userName',
-        'tasks',
-        'totalTask',
-        'completedCount'
-    ));
-
-})->name('dashboard');
->>>>>>> e36a333b9ecb01483c870dce597133429f1d57df
+Route::get('/dashboard', [TaskController::class, 'dashboard'])
+    ->name('dashboard');
 
 /*
 |--------------------------------------------------------------------------
@@ -135,6 +99,11 @@ Route::post('/alltask', [TaskController::class, 'store'])
 
 Route::post('/tasks/update-status/{id}', [TaskController::class, 'updateStatus'])
     ->name('tasks.updateStatus');
+
+Route::get(
+    '/tasks/search',
+    [TaskController::class, 'search']
+)->name('tasks.search');
 
 /*
 |--------------------------------------------------------------------------
