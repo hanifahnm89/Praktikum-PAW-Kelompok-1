@@ -40,9 +40,9 @@
                 <h3 class="text-2xl font-bold text-gray-800">Upcoming Task</h3>
                 <div class="flex gap-3">
                     <button onclick="window.location.href='{{ route('all-task') }}'" class="px-6 py-2 bg-white rounded-full text-xs font-bold text-gray-400 uppercase tracking-wider hover:bg-gray-100 transition">View All Task</button>
-                    <button onclick="window.location.href='/tasks/create'" class="px-8 py-2 bg-primary text-white rounded-full text-xs font-bold uppercase shadow-lg hover:scale-105 transition">
-                        + New
-                    </button>
+                    <button onclick="openModal()" class="bg-primary text-white px-4 py-2 rounded-xl">
+    + New Task
+</button>
                 </div>
             </div>
 
@@ -51,97 +51,95 @@
             @endphp
 
 
-        <div class="relative mb-12">
-            <i class="ph ph-magnifying-glass absolute left-0 top-1 text-gray-300 text-xl"></i>
+            <div class="relative mb-12">
+                <i class="ph ph-magnifying-glass absolute left-0 top-1 text-gray-300 text-xl"></i>
 
-            <input
-                type="text"
-                id="dashboardSearch"
-                placeholder="Search tasks"
-                class="w-full pl-8 pb-3 border-b border-gray-100 outline-none text-sm text-gray-500 bg-transparent">
-        </div>
+                <input
+                    type="text"
+                    id="dashboardSearch"
+                    placeholder="Search tasks"
+                    class="w-full pl-8 pb-3 border-b border-gray-100 outline-none text-sm text-gray-500 bg-transparent">
+            </div>
 
-        @if($activeTasks->count() > 0)
+            @if($activeTasks->count() > 0)
 
-        <div class="bg-white rounded-xl overflow-hidden">
-            <table class="w-full text-left border-collapse">
+            <div class="bg-white rounded-xl overflow-hidden">
+                <table class="w-full text-left border-collapse">
 
-                <tbody id="dashboardTaskBody" class="divide-y divide-gray-50">
+                    <tbody id="dashboardTaskBody" class="divide-y divide-gray-50">
 
-                    @foreach($activeTasks as $task)
-                    <tr class="task-row">
+                        @foreach($activeTasks as $task)
+                        <tr class="task-row">
 
-                        <x-task.table-row
-                            :id="$task->id"
-                            :task_name="$task->task_name"
-                            :course="$task->course"
-                            :due="$task->due_date"
-                            :time="$task->time ?? '23:59'"
-                            :status="$task->status"
-                        />
+                            <x-task.table-row
+                                :id="$task->id"
+                                :task_name="$task->task_name"
+                                :course="$task->course"
+                                :due="$task->due_date"
+                                :time="$task->time ?? '23:59'"
+                                :status="$task->status" />
 
-                    </tr>
-                    @endforeach
+                        </tr>
+                        @endforeach
 
-                </tbody>
+                    </tbody>
 
-            </table>
-        </div>
+                </table>
+            </div>
 
-        @else
+            @else
 
-        <div class="flex flex-col items-center justify-center py-20 bg-white rounded-[40px]">
+            <div class="flex flex-col items-center justify-center py-20 bg-white rounded-[40px]">
 
-            <img
-                src="{{ asset('images/done-task.png') }}"
-                class="w-64 mb-8 opacity-60">
+                <img
+                    src="{{ asset('images/done-task.png') }}"
+                    class="w-64 mb-8 opacity-60">
 
-            <p class="text-gray-400 font-medium text-lg">
-                Hooray! You don't have any assignments yet
-            </p>
+                <p class="text-gray-400 font-medium text-lg">
+                    Hooray! You don't have any assignments yet
+                </p>
 
-        </div>
+            </div>
 
-        @endif
+            @endif
 
-        <script>
+            <script>
+                document.getElementById('dashboardSearch')
+                    .addEventListener('keyup', async function() {
 
-        document.getElementById('dashboardSearch')
-        .addEventListener('keyup', async function () {
+                        let keyword = this.value;
 
-            let keyword = this.value;
+                        let response = await fetch(
+                            `/tasks/search?search=${keyword}`
+                        );
 
-            let response = await fetch(
-                `/tasks/search?search=${keyword}`
-            );
+                        let tasks = await response.json();
 
-            let tasks = await response.json();
+                        let body = document.getElementById(
+                            'dashboardTaskBody'
+                        );
 
-            let body = document.getElementById(
-                'dashboardTaskBody'
-            );
+                        body.innerHTML = '';
 
-            body.innerHTML = '';
+                        tasks.forEach(task => {
 
-            tasks.forEach(task => {
+                            if (task.status === 'Done') return;
 
-                if (task.status === 'Done') return;
+                            let badgeClass = '';
 
-                let badgeClass = '';
+                            if (task.status === 'Not Started') {
 
-                if (task.status === 'Not Started') {
+                                badgeClass =
+                                    'bg-red-100 text-red-400';
 
-                    badgeClass =
-                        'bg-red-100 text-red-400';
+                            } else {
 
-                } else {
+                                badgeClass =
+                                    'bg-yellow-50 text-yellow-500';
 
-                    badgeClass =
-                        'bg-yellow-50 text-yellow-500';
+                            }
 
-                }
-
-                body.innerHTML += `
+                            body.innerHTML += `
 
                 <tr class="border-b border-gray-50 group hover:bg-gray-50/50 transition">
 
@@ -209,12 +207,92 @@
 
                 `;
 
-            });
+                        });
 
-        });
+                    });
+            </script>
+            <script>
+    function openModal() {
+        document.getElementById('taskModal').classList.remove('hidden');
+        document.getElementById('taskModal').classList.add('flex');
+    }
 
-        </script>
+    function closeModal() {
+        document.getElementById('taskModal').classList.add('hidden');
+        document.getElementById('taskModal').classList.remove('flex');
+    }
+</script>
         </div>
     </main>
+</div>
+<!-- MODAL OVERLAY -->
+<div id="taskModal" class="fixed inset-0 hidden items-center justify-center bg-black/60 z-50">
+
+    <div class="bg-white w-full max-w-3xl rounded-[32px] p-10 shadow-2xl relative">
+
+        <!-- CLOSE -->
+        <button onclick="closeModal()" class="absolute top-5 right-6 text-gray-500 text-xl">
+            ✕
+        </button>
+
+        <h2 class="text-5xl font-bold text-primary mb-8">
+            Add New Task
+        </h2>
+
+        <form action="{{ route('tasks.store') }}" method="POST" class="space-y-5">
+            @csrf
+
+            <input type="text" name="task_name" placeholder="Task Name"
+                class="w-full border rounded-xl px-4 py-3 text-sm">
+
+            <div class="grid grid-cols-2 gap-4">
+                <input type="date" name="due_date"
+                    class="border rounded-xl px-4 py-3 text-sm">
+
+                <select name="priority" class="border rounded-xl px-4 py-3 text-sm">
+                    <option value="">Priority</option>
+                    <option>High</option>
+                    <option>Medium</option>
+                    <option>Low</option>
+                </select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <input type="time" name="time"
+                    class="border rounded-xl px-4 py-3 text-sm">
+
+                <select name="status" class="border rounded-xl px-4 py-3 text-sm">
+                    <option value="">Status</option>
+                    <option>Not Started</option>
+                    <option>In Progress</option>
+                    <option>Done</option>
+                </select>
+            </div>
+
+            <textarea name="description" placeholder="Description"
+                class="w-full border rounded-xl px-4 py-7 text-sm"></textarea>
+
+            <textarea name="notes" placeholder="Notes"
+                class="w-full border rounded-xl px-4 py-3 text-sm"></textarea>
+
+            <textarea name="URL Link" placeholder="URL Link"
+                class="w-full border rounded-xl px-4 py-2 text-sm"></textarea>
+
+            <div class="flex justify-end gap-4 pt-5">
+
+                <button type="button" onclick="closeModal()"
+                    class="text-gray-500 font-bold">
+                    Cancel
+                </button>
+
+                <button type="submit"
+                    class="bg-primary text-white px-8 py-3 rounded-xl font-bold">
+                    Add Task
+                </button>
+
+            </div>
+
+        </form>
+    </div>
 </div>
 @endsection
