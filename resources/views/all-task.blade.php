@@ -1,21 +1,26 @@
 @extends('layouts.app')
 
 @section('content')
+
 <div class="flex min-h-screen bg-white">
 
+    <!-- SIDEBAR -->
     <x-sidebar />
 
+    <!-- MAIN -->
     <main class="ml-64 flex-1 p-12">
 
+        <!-- HEADER -->
         <div class="flex justify-between items-center mb-10">
 
             <h2 class="text-3xl font-bold text-primary">
                 All Task
             </h2>
 
+            <!-- BUTTON OPEN MODAL -->
             <button
-                onclick="window.location.href='{{ route('tasks.create') }}';"
-                class="bg-indigo-50 text-primary px-6 py-2 rounded-xl text-xs font-bold">
+                onclick="openModal()"
+                class="bg-indigo-50 text-primary px-6 py-3 rounded-2xl text-sm font-bold hover:bg-indigo-100 transition">
 
                 + New Task
 
@@ -23,6 +28,7 @@
 
         </div>
 
+        <!-- SEARCH -->
         <div class="flex justify-between items-end mb-12">
 
             <div class="relative w-2/3">
@@ -33,13 +39,13 @@
                     type="text"
                     id="searchInput"
                     placeholder="Search tasks by name..."
-
                     class="w-full pl-8 pb-2 border-b border-gray-100 outline-none text-sm text-gray-400 bg-transparent">
 
             </div>
 
         </div>
 
+        <!-- TABLE -->
         <table class="w-full text-left" id="taskTable">
 
             <thead>
@@ -72,9 +78,7 @@
                         :course="$task->course"
                         :due="$task->due_date"
                         :time="$task->time ?? '23:59'"
-                        :status="$task->status"
-
-                    />
+                        :status="$task->status" />
 
                 </tr>
 
@@ -87,53 +91,157 @@
     </main>
 
 </div>
+
+<!-- MODAL -->
+<div
+    id="taskModal"
+    class="fixed inset-0 bg-black/40 hidden items-center justify-center z-50">
+
+    <!-- MODAL BOX -->
+    <div class="bg-white w-full max-w-3xl rounded-[40px] p-10 relative shadow-2xl">
+
+        <!-- CLOSE BUTTON -->
+        <button
+            onclick="closeModal()"
+            class="absolute top-6 right-8 text-gray-400 text-4xl hover:text-gray-600 transition">
+
+            &times;
+
+        </button>
+
+        <!-- TITLE -->
+        <h2 class="text-5xl font-bold text-primary mb-10">
+            Add New Task
+        </h2>
+
+        <!-- FORM -->
+        <form action="{{ route('tasks.store') }}" method="POST" class="space-y-5">
+            @csrf
+
+            <input type="text" name="task_name" placeholder="Task Name"
+                class="w-full border rounded-xl px-4 py-3 text-sm">
+
+            <div class="grid grid-cols-2 gap-4">
+                <input type="date" name="due_date"
+                    class="border rounded-xl px-4 py-3 text-sm">
+
+                <select name="priority" class="border rounded-xl px-4 py-3 text-sm">
+                    <option value="">Priority</option>
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                </select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <input type="time" name="time"
+                    class="border rounded-xl px-4 py-3 text-sm">
+
+                <select name="status" class="border rounded-xl px-4 py-3 text-sm">
+                    <option value="">Status</option>
+                    <option value="Not Started">Not Started</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Done">Done</option>
+                </select>
+            </div>
+
+            <textarea name="description" placeholder="Description"
+                class="w-full border rounded-xl px-4 py-7 text-sm"></textarea>
+
+            <textarea name="notes" placeholder="Notes"
+                class="w-full border rounded-xl px-4 py-3 text-sm"></textarea>
+
+            <textarea name="url_link" placeholder="URL Link"
+                class="w-full border rounded-xl px-4 py-2 text-sm"></textarea>
+
+            <div class="flex justify-end gap-4 pt-5">
+
+                <button type="button" onclick="closeModal()"
+                    class="text-gray-500 font-bold">
+                    Cancel
+                </button>
+
+                <button type="submit"
+                    class="bg-primary text-white px-8 py-3 rounded-xl font-bold">
+                    Add Task
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<!-- SCRIPT -->
 <script>
-document.getElementById('searchInput')
-.addEventListener('keyup', async function () {
+    function openModal() {
 
-    let keyword = this.value;
+        document
+            .getElementById('taskModal')
+            .classList.remove('hidden');
 
-    let response = await fetch(
-        `/tasks/search?search=${keyword}`
-    );
+        document
+            .getElementById('taskModal')
+            .classList.add('flex');
 
-    let tasks = await response.json();
+    }
 
-    let tbody = document.getElementById(
-        'taskBody'
-    );
+    function closeModal() {
 
-    tbody.innerHTML = '';
+        document
+            .getElementById('taskModal')
+            .classList.remove('flex');
 
-    tasks.forEach(task => {
+        document
+            .getElementById('taskModal')
+            .classList.add('hidden');
 
-        let badgeClass = '';
+    }
 
-        if (task.status == 'Done') {
+    document.getElementById('searchInput')
+        .addEventListener('keyup', async function() {
 
-            badgeClass =
-                'bg-green-100 text-green-500';
+            let keyword = this.value;
 
-        }
+            let response = await fetch(
+                `/tasks/search?search=${keyword}`
+            );
 
-        else if (
-            task.status ==
-            'Not Started'
-        ) {
+            let tasks = await response.json();
 
-            badgeClass =
-                'bg-red-100 text-red-400';
+            let tbody = document.getElementById(
+                'taskBody'
+            );
 
-        }
+            tbody.innerHTML = '';
 
-        else {
+            tasks.forEach(task => {
 
-            badgeClass =
-                'bg-yellow-50 text-yellow-500';
+                let badgeClass = '';
 
-        }
+                if (task.status == 'Done') {
 
-        tbody.innerHTML += `
+                    badgeClass =
+                        'bg-green-100 text-green-500';
+
+                } else if (
+                    task.status ==
+                    'Not Started'
+                ) {
+
+                    badgeClass =
+                        'bg-red-100 text-red-400';
+
+                } else {
+
+                    badgeClass =
+                        'bg-yellow-50 text-yellow-500';
+
+                }
+
+                tbody.innerHTML += `
 
             <tr class="
                 border-b
@@ -225,8 +333,9 @@ document.getElementById('searchInput')
 
         `;
 
-    });
+            });
 
-});
+        });
 </script>
+
 @endsection

@@ -41,8 +41,8 @@
                 <div class="flex gap-3">
                     <button onclick="window.location.href='{{ route('all-task') }}'" class="px-6 py-2 bg-white rounded-full text-xs font-bold text-gray-400 uppercase tracking-wider hover:bg-gray-100 transition">View All Task</button>
                     <button onclick="openModal()" class="bg-primary text-white px-4 py-2 rounded-xl">
-    + New Task
-</button>
+                        + New Task
+                    </button>
                 </div>
             </div>
 
@@ -212,16 +212,16 @@
                     });
             </script>
             <script>
-    function openModal() {
-        document.getElementById('taskModal').classList.remove('hidden');
-        document.getElementById('taskModal').classList.add('flex');
-    }
+                function openModal() {
+                    document.getElementById('taskModal').classList.remove('hidden');
+                    document.getElementById('taskModal').classList.add('flex');
+                }
 
-    function closeModal() {
-        document.getElementById('taskModal').classList.add('hidden');
-        document.getElementById('taskModal').classList.remove('flex');
-    }
-</script>
+                function closeModal() {
+                    document.getElementById('taskModal').classList.add('hidden');
+                    document.getElementById('taskModal').classList.remove('flex');
+                }
+            </script>
         </div>
     </main>
 </div>

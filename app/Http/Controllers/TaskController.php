@@ -9,7 +9,6 @@ class TaskController extends Controller
 {
     public function dashboard()
     {
-        
         $user = session('user');
 
         $firstName = $user['first_name'] ?? 'Guest';
@@ -52,9 +51,14 @@ class TaskController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'task_name' => 'required',
-            'course' => 'required',
+            'task_name' => 'required|string',
             'due_date' => 'required|date',
+            'priority' => 'required',
+            'time' => 'required',
+            'status' => 'required',
+            'description' => 'nullable|string',
+            'notes' => 'nullable|string',
+            'url_link' => 'nullable|url',
         ]);
 
         Task::create([
@@ -63,14 +67,11 @@ class TaskController extends Controller
             'course' => $request->course,
             'due_date' => $request->due_date,
             'time' => $request->time,
-            'priority' => $request->priority,
             'status' => $request->status ?? 'Not Started',
-            'description' => $request->description,
         ]);
-
         return redirect()
-            ->route('dashboard')
-            ->with('success', 'Tugas berhasil ditambah!');
+            ->route('all-task')
+            ->with('success', 'Tugas berhasil ditambahkan!');
     }
 
     public function detail($id)
@@ -89,6 +90,7 @@ class TaskController extends Controller
             ->first();
 
         if ($task) {
+
             $task->update([
                 'status' => 'Done'
             ]);

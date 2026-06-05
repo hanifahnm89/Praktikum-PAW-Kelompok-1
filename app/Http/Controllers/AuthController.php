@@ -55,6 +55,30 @@ class AuthController extends Controller
 
         return back()->withErrors(['email' => 'Email atau password salah!'])->withInput();
     }
+
+    public function forgotPassword(Request $request)
+{
+    $request->validate([
+        'email' => 'required|email',
+        'new_password' => 'required|min:8|confirmed',
+    ]);
+
+    $user = User::where('email', $request->email)->first();
+
+    if (!$user) {
+
+        return back()->with('error', 'Email tidak ditemukan');
+
+    }
+
+    $user->password = Hash::make($request->new_password);
+
+    $user->save();
+
+    return redirect()->route('login')
+        ->with('success', 'Password berhasil direset');
+}
+
     public function logout(Request $request) {
         $request->session()->invalidate();
         $request->session()->regenerateToken();

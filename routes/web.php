@@ -8,20 +8,9 @@ use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TaskController;
 
-/*
-|--------------------------------------------------------------------------
-| LANDING
-|--------------------------------------------------------------------------
-*/
+
 Route::get('/', [LandingController::class, 'index'])->name('landing');
 
-/*
-|--------------------------------------------------------------------------
-| AUTH
-|--------------------------------------------------------------------------
-*/
-
-// LOGIN
 Route::get('/login', function () {
     if (session()->has('user')) {
         return redirect()->route('dashboard');
@@ -31,7 +20,6 @@ Route::get('/login', function () {
 
 Route::post('/login', [AuthController::class, 'login'])->name('login.check');
 
-// REGISTER
 Route::get('/register', function () {
     if (session()->has('user')) {
         return redirect()->route('dashboard');
@@ -41,61 +29,27 @@ Route::get('/register', function () {
 
 Route::post('/register', [AuthController::class, 'register'])->name('register.store');
 
-/*
-|--------------------------------------------------------------------------
-| DASHBOARD
-|--------------------------------------------------------------------------
-*/
 Route::get('/dashboard', [TaskController::class, 'dashboard'])
     ->name('dashboard');
 
-/*
-|--------------------------------------------------------------------------
-| CALENDAR
-|--------------------------------------------------------------------------
-*/
 Route::get('/calendar', [CalendarController::class, 'index'])
     ->name('calendar');
 
-/*
-|--------------------------------------------------------------------------
-| TASKS
-|--------------------------------------------------------------------------
-*/
-
-// ALL TASK PAGE
 Route::get('/all-task', [TaskController::class, 'index'])
     ->name('all-task');
 
-// CREATE TASK (OPTIONAL PAGE)
-Route::get('/tasks/create', function () {
-    if (!session()->has('user')) {
-        return redirect()->route('login');
-    }
-    return view('tasks.create');
-})->name('tasks.create');
-
-// STORE TASK (FIXED - ONLY ONE)
 Route::post('/tasks', [TaskController::class, 'store'])
     ->name('tasks.store');
 
-// UPDATE STATUS (ONLY ONE VERSION)
 Route::post('/tasks/update-status/{id}', [TaskController::class, 'updateStatus'])
     ->name('tasks.updateStatus');
 
-// SEARCH TASK
 Route::get('/tasks/search', [TaskController::class, 'search'])
     ->name('tasks.search');
 
-// DETAIL TASK
 Route::get('/tasks/detail/{id}', [TaskController::class, 'detail'])
     ->name('tasks.detail');
 
-/*
-|--------------------------------------------------------------------------
-| SETTINGS
-|--------------------------------------------------------------------------
-*/
 Route::get('/settings', function () {
     if (!session()->has('user')) {
         return redirect()->route('login');
@@ -103,10 +57,18 @@ Route::get('/settings', function () {
     return app(SettingsController::class)->index();
 })->name('settings');
 
-/*
-|--------------------------------------------------------------------------
-| LOGOUT
-|--------------------------------------------------------------------------
-*/
+Route::post('/settings/update', [SettingsController::class, 'update'])
+    ->name('settings.update');
+
+Route::post('/password/update', [SettingsController::class, 'updatePassword'])
+    ->name('password.update');
+
+Route::get('/forgot-password', function () {
+    return view('auth.forgot-password');
+})->name('forgot.password');
+
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])
+    ->name('forgot.password.post');
+
 Route::get('/logout', [AuthController::class, 'logout'])
     ->name('logout');

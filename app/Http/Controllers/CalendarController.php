@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Storage;
+use App\Models\Task;
 
 class CalendarController extends Controller
 {
@@ -16,76 +16,92 @@ class CalendarController extends Controller
                 ->with('error', 'Silakan login terlebih dahulu.');
         }
 
+        // BULAN AKTIF
         if ($request->has('month')) {
 
-            $date = Carbon::createFromFormat('Y-m', $request->month);
+            $date = Carbon::createFromFormat(
+                'Y-m',
+                $request->month
+            );
         } else {
 
             $date = now();
         }
 
+        // VIEW (month/week)
+        $view = $request->get('view', 'month');
+
         $month = $date->month;
         $year = $date->year;
 
-        // TOTAL HARI DALAM BULAN
+        // TOTAL HARI BULAN
         $daysInMonth = $date->daysInMonth;
 
         // POSISI HARI PERTAMA
-        $startDay = $date->copy()->startOfMonth()->dayOfWeekIso - 1;
+        $startDay = $date
+            ->copy()
+            ->startOfMonth()
+            ->dayOfWeekIso - 1;
 
         // TOTAL CELL KALENDER
-        $totalCells = ceil(($daysInMonth + $startDay) / 7) * 7;
+        $totalCells = ceil(
+            ($daysInMonth + $startDay) / 7
+        ) * 7;
 
-        // AMBIL TASK JSON
-        $path = 'tasks.json';
 
-        $allTasks = Storage::exists($path)
-            ? json_decode(Storage::get($path), true)
-            : [];
+        $tasks = Task::where(
+            'user_id',
+            session('user')['id']
+        )->get();
 
-        // FILTER EVENT
-        $events = collect($allTasks)
-            ->filter(function ($task) use ($month, $year) {
+        $events = [];
 
-                if (!isset($task['due'])) return false;
+        foreach ($tasks as $task) {
 
-                try {
+            $events[$task->due_date][] = [
+                'id' => $task->id,
+                'title' => $task->task_name,
+                'course' => $task->course,
+                'time' => $task->time,
+            ];
+        }
 
-                    $dateString = $this->translateDate($task['due']);
 
-                    $taskDate = Carbon::parse($dateString);
+        // DATA WEEK VIEW
+        $weeklyEvents = [];
 
-                    return $taskDate->month == $month
-                        && $taskDate->year == $year;
-                } catch (\Exception $e) {
+        foreach ($events ?? [] as $dateKey => $dayEvents) {
 
-                    return false;
-                }
-            })
-            ->groupBy(function ($task) {
+            $weekNumber = Carbon::parse($dateKey)
+                ->weekOfMonth;
 
-                try {
+            foreach ($dayEvents as $event) {
 
-                    $dateString = $this->translateDate($task['due']);
+                $weeklyEvents[$weekNumber][] = [
+                    'date' => $dateKey,
+                    'event' => $event
+                ];
+            }
+        }
 
-                    return Carbon::parse($dateString)
-                        ->format('Y-m-d');
-                } catch (\Exception $e) {
+        ksort($weeklyEvents);
 
-                    return 'invalid-date';
-                }
-            });
-
-        return view('calendar', compact(
-            'date',
-            'daysInMonth',
-            'startDay',
-            'totalCells',
-            'events',
-            'month',
-            'year'
-        ));
+        return view(
+            'calendar',
+            compact(
+                'date',
+                'view',
+                'daysInMonth',
+                'startDay',
+                'totalCells',
+                'events',
+                'weeklyEvents',
+                'month',
+                'year'
+            )
+        );
     }
+
     private function translateDate($dateString)
     {
         $months = [
@@ -103,6 +119,9 @@ class CalendarController extends Controller
             'desember' => 'december'
         ];
 
-        return strtr(strtolower($dateString), $months);
+        return strtr(
+            strtolower($dateString),
+            $months
+        );
     }
 }

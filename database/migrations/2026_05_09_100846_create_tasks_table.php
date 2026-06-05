@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('task_name');
-            $table->string('course');
+            $table->string('course')->nullable(); 
             $table->date('due_date');
             $table->string('time')->default('23:59');
             $table->enum('status', ['Not Started', 'In Progress', 'Done'])->default('Not Started');
